@@ -11,7 +11,7 @@ const router = useRouter()
 const showNav = ref(true)
 
 watch(() => router.currentRoute.value, (route) => {
-  showNav = !route.path.includes('/login')
+  showNav.value = !route.path.includes('/login')
 })
 </script>
 

@@ -33,6 +33,12 @@ const routes = [
     component: () => import('@/views/LoginView.vue'),
     meta: { requiresAuth: false },
   },
+  {
+    path: '/pricing',
+    name: 'pricing',
+    component: () => import('@/views/PricingView.vue'),
+    meta: { requiresAuth: false },
+  },
 ]
 
 const router = createRouter({
