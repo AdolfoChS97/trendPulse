@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+    "paths": {
+      "@trendpulse/shared": ["../../packages/shared/src"],
+      "@trendpulse/shared/*": ["../../packages/shared/src/*"],
+      "@trendpulse/db": ["../../packages/db/src"],
+      "@trendpulse/db/*": ["../../packages/db/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "test"]
+}

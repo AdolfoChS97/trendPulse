@@ -1,0 +1,89 @@
+/**
+ * TrendPulse Design Tokens v1.0
+ * Pulse Dark theme — based on branding guide
+ */
+
+:root {
+  /* === Typography === */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* === Backgrounds === */
+  --color-bg-primary: #0A0E17;
+  --color-bg-surface: #141926;
+  --color-bg-elevated: #1C2333;
+  --color-bg-overlay: rgba(10, 14, 23, 0.85);
+
+  /* === Borders === */
+  --color-border-default: #252D3E;
+  --color-border-active: #6C5CE7;
+  --color-border-hover: #364153;
+
+  /* === Brand === */
+  --color-brand-100: #2D2566;
+  --color-brand-200: #9D93F5;
+  --color-brand-300: #7D6FEF;
+  --color-brand-400: #6C5CE7;
+  --color-brand-500: #5A4BD1;
+
+  /* === Text === */
+  --color-text-primary: #ECEFF4;
+  --color-text-secondary: #8A92A6;
+  --color-text-muted: #4E5668;
+  --color-text-inverse: #0A0E17;
+
+  /* === Semantic === */
+  --color-success: #00E396;
+  --color-success-muted: rgba(0, 227, 150, 0.1);
+  --color-warning: #F7B731;
+  --color-warning-muted: rgba(247, 183, 49, 0.1);
+  --color-error: #FF6B6B;
+  --color-error-muted: rgba(255, 107, 107, 0.1);
+  --color-info: #45AAF2;
+  --color-info-muted: rgba(69, 170, 242, 0.1);
+
+  /* === Platform Colors === */
+  --color-platform-x: #1DA1F2;
+  --color-platform-youtube: #FF0000;
+  --color-platform-instagram: #E1306C;
+  --color-platform-tiktok: #FF0050;
+  --color-platform-twitch: #9146FF;
+
+  /* === Gradients === */
+  --gradient-brand: linear-gradient(135deg, #6C5CE7 0%, #00D2FF 100%);
+  --gradient-card: linear-gradient(180deg, #1C2333 0%, #141926 100%);
+  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(108, 92, 231, 0.15) 0%, transparent 70%);
+  --gradient-success: linear-gradient(135deg, #00E396 0%, #20BF6B 100%);
+  --gradient-danger: linear-gradient(135deg, #FF6B6B 0%, #FC5C65 100%);
+
+  /* === Shadows === */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow-brand: 0 0 20px rgba(108, 92, 231, 0.3);
+  --shadow-glow-success: 0 0 20px rgba(0, 227, 150, 0.2);
+
+  /* === Border Radius === */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* === Spacing (4px baseline) === */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* === Animation === */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}

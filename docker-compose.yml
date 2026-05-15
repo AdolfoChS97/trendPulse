@@ -1,0 +1,156 @@
+# ====================================
+# TrendPulse — Docker Compose (Dev)
+# ====================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tp-postgres
+    environment:
+      POSTGRES_DB: trendpulse
+      POSTGRES_USER: trendpulse
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devpassword}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trendpulse"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tp-internal
+
+  redis:
+    image: redis:7-alpine
+    container_name: tp-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tp-internal
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+      target: ${DOCKER_TARGET:-development}
+    container_name: tp-api
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgres://trendpulse:${DB_PASSWORD:-devpassword}@postgres:5432/trendpulse
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret}
+      JWT_EXPIRATION: 15m
+      JWT_REFRESH_EXPIRATION: 7d
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      POLAR_ACCESS_TOKEN: ${POLAR_ACCESS_TOKEN}
+      POLAR_WEBHOOK_SECRET: ${POLAR_WEBHOOK_SECRET}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+      SENTRY_DSN: ${SENTRY_DSN}
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./apps/api/src:/app/apps/api/src:delegated
+      - ./packages:/app/packages:delegated
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - tp-internal
+      - tp-public
+
+  worker-collector:
+    build:
+      context: .
+      dockerfile: docker/worker-collector.Dockerfile
+      target: ${DOCKER_TARGET:-development}
+    container_name: tp-worker-collector
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgres://trendpulse:${DB_PASSWORD:-devpassword}@postgres:5432/trendpulse
+      REDIS_URL: redis://redis:6379
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+      PLATFORM_MOCK_MODE: ${PLATFORM_MOCK_MODE:-true}
+    volumes:
+      - ./workers/collector/src:/app/workers/collector/src:delegated
+      - ./packages:/app/packages:delegated
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - tp-internal
+
+  worker-analytics:
+    build:
+      context: .
+      dockerfile: docker/worker-analytics.Dockerfile
+      target: ${DOCKER_TARGET:-development}
+    container_name: tp-worker-analytics
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgres://trendpulse:${DB_PASSWORD:-devpassword}@postgres:5432/trendpulse
+      REDIS_URL: redis://redis:6379
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+    volumes:
+      - ./workers/analytics/src:/app/workers/analytics/src:delegated
+      - ./packages:/app/packages:delegated
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - tp-internal
+
+  pwa:
+    build:
+      context: .
+      dockerfile: docker/pwa.Dockerfile
+      target: ${DOCKER_TARGET:-development}
+    container_name: tp-pwa
+    environment:
+      VITE_API_URL: http://localhost:4000
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./apps/pwa/src:/app/apps/pwa/src:delegated
+      - ./apps/pwa/public:/app/apps/pwa/public:delegated
+    depends_on:
+      - api
+    networks:
+      - tp-public
+
+  # Future: uncomment when web app is created
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/web.Dockerfile
+  #     target: ${DOCKER_TARGET:-development}
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./apps/web:/app/apps/web:delegated
+  #   depends_on:
+  #     - api
+  #   networks:
+  #     - tp-public
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  tp-internal:
+    driver: bridge
+  tp-public:
+    driver: bridge
