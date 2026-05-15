@@ -1,8 +1,8 @@
+@import './tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './tokens.css';
 
 @layer base {
   * {
@@ -11,11 +11,14 @@
     padding: 0;
   }
 
+  html {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+  }
+
   html, body, #app {
     height: 100%;
     font-family: var(--font-sans);
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
