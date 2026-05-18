@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
     "target": "ES2022",
@@ -6,25 +7,22 @@
     "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": false,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@trendpulse/db": ["../../packages/db/src"],
-      "@trendpulse/db/*": ["../../packages/db/src/*"]
+      "@trendpulse/shared": ["../../packages/shared/src"],
+      "@trendpulse/shared/*": ["../../packages/shared/src/*"]
     }
   },
-  "references": [
-    { "path": "../../packages/db" }
-  ],
+  "references": [],
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
