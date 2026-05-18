@@ -9,7 +9,7 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
-COPY package.json pnpm-workspace.yaml ./
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/pwa/package.json apps/pwa/
 COPY packages/shared/package.json packages/shared/
 
@@ -29,7 +29,7 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
-COPY package.json pnpm-workspace.yaml ./
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/pwa/package.json apps/pwa/
 COPY packages/shared/package.json packages/shared/
 
