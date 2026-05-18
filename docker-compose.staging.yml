@@ -1,0 +1,118 @@
+# ====================================
+# TrendPulse — Docker Compose Staging
+# ====================================
+# Corre en el mismo VPS que prod.
+# Puertos +1, DB schema separada.
+# Sin watchtower, sin certbot. Efímero.
+
+services:
+  postgres_staging:
+    image: postgres:16-alpine
+    container_name: tp-postgres-staging
+    environment:
+      POSTGRES_DB: trendpulse_staging
+      POSTGRES_USER: trendpulse
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devpassword}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trendpulse"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tp-staging-internal
+
+  redis_staging:
+    image: redis:7-alpine
+    container_name: tp-redis-staging
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_staging_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tp-staging-internal
+
+  api_staging:
+    image: ghcr.io/adolfochs97/trendpulse-api:${TAG:-latest}
+    container_name: tp-api-staging
+    environment:
+      NODE_ENV: staging
+      DATABASE_URL: postgres://trendpulse:${DB_PASSWORD:-devpassword}@postgres_staging:5432/trendpulse_staging
+      REDIS_URL: redis://redis_staging:6379
+      JWT_SECRET: ${JWT_SECRET:-staging-jwt-secret}
+      JWT_EXPIRATION: 15m
+      JWT_REFRESH_EXPIRATION: 7d
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      POLAR_ACCESS_TOKEN: ${POLAR_ACCESS_TOKEN}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+      SENTRY_DSN: ${SENTRY_DSN}
+    ports:
+      - "4001:4000"
+    depends_on:
+      postgres_staging:
+        condition: service_healthy
+      redis_staging:
+        condition: service_healthy
+    networks:
+      - tp-staging-internal
+      - tp-staging-public
+
+  worker-collector_staging:
+    image: ghcr.io/adolfochs97/trendpulse-worker-collector:${TAG:-latest}
+    container_name: tp-worker-collector-staging
+    environment:
+      NODE_ENV: staging
+      DATABASE_URL: postgres://trendpulse:${DB_PASSWORD:-devpassword}@postgres_staging:5432/trendpulse_staging
+      REDIS_URL: redis://redis_staging:6379
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+      PLATFORM_MOCK_MODE: "true"
+    depends_on:
+      redis_staging:
+        condition: service_healthy
+    networks:
+      - tp-staging-internal
+
+  worker-analytics_staging:
+    image: ghcr.io/adolfochs97/trendpulse-worker-analytics:${TAG:-latest}
+    container_name: tp-worker-analytics-staging
+    environment:
+      NODE_ENV: staging
+      DATABASE_URL: postgres://trendpulse:${DB_PASSWORD:-devpassword}@postgres_staging:5432/trendpulse_staging
+      REDIS_URL: redis://redis_staging:6379
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+    depends_on:
+      redis_staging:
+        condition: service_healthy
+    networks:
+      - tp-staging-internal
+
+  pwa_staging:
+    image: ghcr.io/adolfochs97/trendpulse-pwa:${TAG:-latest}
+    container_name: tp-pwa-staging
+    environment:
+      VITE_API_URL: http://api_staging:4000
+    ports:
+      - "8081:80"
+    depends_on:
+      - api_staging
+    networks:
+      - tp-staging-public
+
+volumes:
+  postgres_staging_data:
+  redis_staging_data:
+
+networks:
+  tp-staging-internal:
+    driver: bridge
+  tp-staging-public:
+    driver: bridge
