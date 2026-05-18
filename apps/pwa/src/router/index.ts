@@ -39,6 +39,12 @@ const routes = [
     component: () => import('@/views/PricingView.vue'),
     meta: { requiresAuth: false },
   },
+  {
+    path: '/onboarding',
+    name: 'onboarding',
+    component: () => import('@/views/OnboardingView.vue'),
+    meta: { requiresAuth: true },
+  },
 ]
 
 const router = createRouter({
